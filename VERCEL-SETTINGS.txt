@@ -1,0 +1,30 @@
+=================================================================
+  WHAT TO PASTE INTO VERCEL
+=================================================================
+
+When Vercel asks for "Environment Variables", add these THREE.
+Click "Add another" between each one.
+
+Copy the Name into the left box, the Value into the right box.
+
+-----------------------------------------------------------------
+NAME:   DATABASE_URL
+VALUE:  postgresql://neondb_owner:npg_yW0epCHjhEX1@ep-holy-cloud-axiqr2az-pooler.c-4.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+-----------------------------------------------------------------
+NAME:   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+VALUE:  pk_test_dG91Y2hlZC1lZ3JldC0zOTIyLmNsZXJrLmFjY291bnRzLmRldiQ
+-----------------------------------------------------------------
+NAME:   CLERK_SECRET_KEY
+VALUE:  sk_test_9TNwu92o1MApUQfdECbKP7GAYxxqedtyCyPESeAIdB
+-----------------------------------------------------------------
+
+Everything else on the Vercel screen: leave exactly as it is.
+It detects Next.js on its own.
+
+Then click Deploy and wait about two minutes.
+
+-----------------------------------------------------------------
+KEEP THIS FILE OFF GITHUB.
+It is deliberately outside the UPLOAD-TO-GITHUB folder. Do not
+move it in there — those keys must never go into a repository.
+=================================================================
