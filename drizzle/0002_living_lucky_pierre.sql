@@ -1,0 +1,1 @@
+ALTER TABLE "pipeline_stages" ALTER COLUMN "analytics_bucket" DROP NOT NULL;

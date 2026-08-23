@@ -1,0 +1,3 @@
+ALTER TABLE "support_ticket_messages" ADD COLUMN "organization_id" uuid NOT NULL;--> statement-breakpoint
+ALTER TABLE "support_ticket_messages" ADD CONSTRAINT "support_ticket_messages_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organizations"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "support_ticket_messages_org_idx" ON "support_ticket_messages" USING btree ("organization_id");
