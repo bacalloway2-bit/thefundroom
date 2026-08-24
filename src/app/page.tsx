@@ -42,7 +42,7 @@ export default function HomePage() {
 
       <Show when="signed-out">
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-          <SignUpButton mode="modal">
+          <SignUpButton mode="modal" forceRedirectUrl="/onboarding">
             <button className="btn btn-primary" type="button">
               Create your workspace
             </button>

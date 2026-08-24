@@ -6,7 +6,11 @@ export const metadata = { title: "Create account" };
 export default function SignUpPage() {
   return (
     <div style={{ display: "grid", placeItems: "center", padding: "72px 24px" }}>
-      <SignUp routing="hash" signInUrl="/sign-in" />
+      <SignUp
+        routing="hash"
+        signInUrl="/sign-in"
+        forceRedirectUrl="/onboarding"
+      />
     </div>
   );
 }

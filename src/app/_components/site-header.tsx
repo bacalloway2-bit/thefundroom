@@ -52,12 +52,12 @@ export function SiteHeader() {
         </Show>
 
         <Show when="signed-out">
-          <SignInButton mode="modal">
+          <SignInButton mode="modal" forceRedirectUrl="/dashboard">
             <button className="btn btn-secondary" type="button">
               Sign in
             </button>
           </SignInButton>
-          <SignUpButton mode="modal">
+          <SignUpButton mode="modal" forceRedirectUrl="/onboarding">
             <button className="btn btn-primary" type="button">
               Create account
             </button>
