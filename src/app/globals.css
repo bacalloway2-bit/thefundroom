@@ -1181,3 +1181,78 @@ textarea.input { resize: vertical; }
 .history-move { font-size: 14px; font-weight: 500; }
 .history-meta { font-size: 12px; color: var(--ink-mute); }
 .history-note { font-size: 13px; color: var(--ink-soft); font-style: italic; }
+
+/* ---------- lender matches ---------- */
+
+.matches { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+
+.match {
+  border: 1px solid var(--rule);
+  border-left-width: 3px;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: grid;
+  gap: 4px;
+  background: var(--surface);
+}
+
+/* The left edge carries the verdict, so a scan down the list reads as a
+   ranking without needing to read any of the text. */
+.match-strong { border-left-color: var(--success); }
+.match-possible { border-left-color: var(--gold-600); }
+.match-weak { border-left-color: var(--rule); background: var(--ground); }
+
+.match-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.match-lender { font-weight: 600; font-size: 15px; }
+
+.match-flag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.flag-strong { color: var(--success); }
+.flag-possible { color: var(--gold-700); }
+.flag-weak { color: var(--ink-mute); }
+
+.match-copy { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+
+.criteria {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 10px 0 0;
+  border-top: 1px solid var(--rule-soft);
+  display: grid;
+  gap: 5px;
+}
+
+.crit {
+  display: grid;
+  grid-template-columns: 16px 118px minmax(0, 1fr);
+  gap: 8px;
+  font-size: 12.5px;
+  align-items: baseline;
+}
+
+@media (max-width: 560px) {
+  .crit { grid-template-columns: 16px minmax(0, 1fr); }
+  .crit-detail { grid-column: 2 / -1; }
+}
+
+.crit-mark { font-family: var(--font-mono); font-size: 11px; }
+.crit-label { color: var(--ink-soft); }
+.crit-detail { color: var(--ink-mute); }
+
+.crit-pass .crit-mark { color: var(--success); }
+.crit-fail .crit-mark { color: var(--danger); }
+.crit-fail .crit-detail { color: var(--danger); }
+.crit-unknown .crit-mark { color: var(--gold-700); }
+.crit-not_specified .crit-mark { color: var(--rule); }
