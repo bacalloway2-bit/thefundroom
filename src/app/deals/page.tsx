@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getSessionState } from "../../lib/auth/session";
 import { can } from "../../lib/auth/guard";
 import { listClientOptions } from "../../lib/data/clients";
+import { matchDeal, type Match } from "../../lib/data/lenders";
 import {
   getDeal,
   listNotes,
@@ -164,6 +165,10 @@ async function DealRoom({
 
   const mayEdit = can(ctx, "deal.edit");
   const mayMove = can(ctx, "deal.change_stage");
+  const mayMatch = can(ctx, "lender.match");
+
+  // Matching is computed on read rather than stored — see lenders.ts.
+  const matching = mayMatch ? await matchDeal(ctx, dealId) : null;
 
   return (
     <div className="app-shell">
@@ -367,12 +372,20 @@ async function DealRoom({
               )}
             </section>
 
+            {matching && (
+              <LenderMatches
+                matches={matching.matches}
+                considered={matching.consideredProducts}
+                missingOnDeal={missingDealFacts(matching.input)}
+              />
+            )}
+
             <section className="card card-pad">
               <h2 className="panel-title">Not here yet</h2>
               <p className="panel-empty">
-                Documents, lender matching and submissions attach to this deal
-                once they are built. They are not linked from here because they
-                do not exist.
+                Documents and banker submissions attach to this deal once they
+                are built. They are not linked from here because they do not
+                exist.
               </p>
             </section>
           </div>
@@ -487,5 +500,144 @@ async function NewDealForm({
         </form>
       </div>
     </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+
+/**
+ * Which facts the deal is missing that lenders commonly ask for.
+ *
+ * Shown once above the matches rather than repeated on every card. If
+ * three lenders all say "needs annual revenue", the useful message is
+ * "go and get the annual revenue", not the same warning three times.
+ */
+function missingDealFacts(input: {
+  requestedAmount: string | null;
+  timeInBusinessMonths: number | null;
+  annualRevenue: string | null;
+  averageMonthlyRevenue: string | null;
+  creditScore: number | null;
+}): string[] {
+  const missing: string[] = [];
+  if (!input.requestedAmount) missing.push("amount requested");
+  if (input.timeInBusinessMonths === null) missing.push("time in business");
+  if (!input.annualRevenue) missing.push("annual revenue");
+  if (!input.averageMonthlyRevenue) missing.push("average monthly revenue");
+  if (input.creditScore === null) missing.push("credit score");
+  return missing;
+}
+
+const STRENGTH_COPY = {
+  strong: "Meets every criterion you recorded",
+  possible: "Meets what is known — some figures missing",
+  weak: "Does not meet at least one criterion",
+} as const;
+
+function LenderMatches({
+  matches,
+  considered,
+  missingOnDeal,
+}: {
+  matches: Match[];
+  considered: number;
+  missingOnDeal: string[];
+}) {
+  if (considered === 0) {
+    return (
+      <section className="card card-pad">
+        <h2 className="panel-title">Lender matches</h2>
+        <p className="panel-empty">
+          No lender products to match against yet. Matching compares this deal
+          to criteria you have entered — it has nothing to compare to until
+          your lender list exists.
+        </p>
+        <p style={{ marginTop: 14 }}>
+          <Link className="btn btn-secondary" href="/lenders">
+            Add your lenders
+          </Link>
+        </p>
+      </section>
+    );
+  }
+
+  const strong = matches.filter((m) => m.strength === "strong");
+  const possible = matches.filter((m) => m.strength === "possible");
+  const weak = matches.filter((m) => m.strength === "weak");
+
+  return (
+    <section className="card card-pad">
+      <h2 className="panel-title">Lender matches</h2>
+      <p className="panel-note" style={{ marginTop: 0, marginBottom: 16 }}>
+        {considered} product{considered === 1 ? "" : "s"} compared —{" "}
+        {strong.length} meet everything, {possible.length} need more
+        information, {weak.length} fall short.
+      </p>
+
+      {missingOnDeal.length > 0 && (
+        <div className="notice notice-ground" style={{ marginBottom: 18 }}>
+          <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>
+            Missing from this file
+          </p>
+          <p className="small muted">
+            {missingOnDeal.join(", ")}. Until these are recorded, matching
+            cannot say whether the criteria are met — it will not assume.
+          </p>
+        </div>
+      )}
+
+      <ul className="matches">
+        {[...strong, ...possible, ...weak].map((m) => (
+          <li key={m.productId} className={`match match-${m.strength}`}>
+            <div className="match-head">
+              <span className="match-lender">
+                <Link className="cell-link" href={`/lenders?id=${m.lenderId}`}>
+                  {m.lenderName}
+                </Link>
+              </span>
+              <span className={`match-flag flag-${m.strength}`}>
+                {m.strength === "strong"
+                  ? "Strong"
+                  : m.strength === "possible"
+                    ? "Possible"
+                    : "Falls short"}
+              </span>
+            </div>
+
+            <span className="cell-sub">
+              {m.productName} · {PRODUCT_LABELS[m.productType]}
+              {m.typicalDecisionDays !== null && (
+                <> · usually {m.typicalDecisionDays}d to decide</>
+              )}
+            </span>
+            <span className="match-copy">{STRENGTH_COPY[m.strength]}</span>
+
+            <ul className="criteria">
+              {m.criteria.map((c) => (
+                <li key={c.label} className={`crit crit-${c.result}`}>
+                  <span className="crit-mark" aria-hidden="true">
+                    {c.result === "pass"
+                      ? "✓"
+                      : c.result === "fail"
+                        ? "✕"
+                        : c.result === "unknown"
+                          ? "?"
+                          : "–"}
+                  </span>
+                  <span className="crit-label">{c.label}</span>
+                  <span className="crit-detail">{c.detail}</span>
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
+
+      <p className="panel-note">
+        Matching is a comparison, not a decision. It uses only the criteria you
+        recorded, and a criterion the lender never gave you shows as
+        &ldquo;no minimum recorded&rdquo; rather than a pass.
+      </p>
+    </section>
   );
 }
