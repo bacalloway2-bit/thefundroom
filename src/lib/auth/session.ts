@@ -63,21 +63,25 @@ export async function syncClerkUser(clerkUserId: string): Promise<string> {
   return row.id;
 }
 
-/** Resolves a Clerk organization id to the local organization row. */
-export async function resolveOrganizationId(clerkOrgId: string): Promise<string> {
+/**
+ * Resolves a Clerk organization id to the local workspace row.
+ *
+ * Returns null rather than throwing when no workspace exists yet. That
+ * state is ordinary, not exceptional: a Clerk organization can exist a
+ * moment before provisioning has run, and the correct response is to send
+ * the person to onboarding — not to show them a crash. Throwing here once
+ * produced exactly that, on a workspace whose owner had just created it.
+ */
+export async function resolveOrganizationId(
+  clerkOrgId: string,
+): Promise<string | null> {
   const [org] = await db
     .select({ id: s.organizations.id })
     .from(s.organizations)
     .where(eq(s.organizations.clerkOrgId, clerkOrgId))
     .limit(1);
 
-  if (!org) {
-    throw new UnauthenticatedError(
-      `Clerk organization ${clerkOrgId} has no matching workspace. ` +
-        `It was likely created outside onboarding, or the sync webhook has not run.`,
-    );
-  }
-  return org.id;
+  return org?.id ?? null;
 }
 
 export interface SessionState {
@@ -100,6 +104,10 @@ export async function getSessionState(): Promise<SessionState> {
 
   const userId = await syncClerkUser(clerkUserId);
   const organizationId = await resolveOrganizationId(clerkOrgId);
+
+  // Clerk knows about the organization but this database does not yet.
+  // Onboarding provisions it; sending them there beats an error page.
+  if (!organizationId) return { status: "no_workspace" };
 
   const ctx = await resolveAuthContext(db, { userId, organizationId });
   return { status: "ready", ctx };
