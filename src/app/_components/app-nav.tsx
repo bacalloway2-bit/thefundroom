@@ -13,6 +13,7 @@ const ITEMS = [
   { key: "dashboard", href: "/dashboard", label: "Overview" },
   { key: "clients", href: "/clients", label: "Clients" },
   { key: "deals", href: "/deals", label: "Deals" },
+  { key: "lenders", href: "/lenders", label: "Lenders" },
 ] as const;
 
 export type NavKey = (typeof ITEMS)[number]["key"];
@@ -35,7 +36,7 @@ export function AppNav({ current }: { current: NavKey }) {
       </ul>
 
       <p className="app-nav-note">
-        Documents, lenders and submissions appear here as they are built.
+        Documents and submissions appear here as they are built.
       </p>
     </nav>
   );
