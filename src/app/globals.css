@@ -1,0 +1,173 @@
+/* ------------------------------------------------------------------ *
+ * The Fund Room — design tokens
+ *
+ * Navy, gold, white, neutrals. The tone to hold is institutional rather
+ * than startup: this software sits between a borrower's tax returns and
+ * a bank's underwriter, and it should look like it knows that.
+ * ------------------------------------------------------------------ */
+
+:root {
+  /* Brand colours sampled directly from the logo artwork, so the interface
+     and the mark are the same navy and gold rather than two near-misses. */
+  --navy-900: #001730;
+  --navy-800: #002850;
+  --navy-700: #0b3462;
+  --navy-600: #1c4a80;
+  --navy-400: #5b7cae;
+
+  --gold-700: #a67f28;
+  --gold-600: #c49743;
+  --gold-500: #d6ac52;
+  --gold-100: #f4ead4;
+
+  /* The growth arrow in the mark. Used for progress and positive movement —
+     never as a status colour, which stays semantic. */
+  --teal-600: #2a7e90;
+  --teal-500: #369ca8;
+
+  --ink: #0e1a2b;
+  --ink-soft: #45536b;
+  --ink-mute: #6b7789;
+
+  --ground: #f4f6fa;
+  --surface: #ffffff;
+  --surface-sunk: #eaeef5;
+  --rule: #d3dae6;
+  --rule-soft: #e4e9f1;
+
+  --success: #2f6b4f;
+  --warning: #a67f28;
+  --danger: #9b3a2e;
+
+  --radius: 6px;
+  --shadow-sm: 0 1px 2px rgba(14, 26, 43, 0.06);
+  --shadow: 0 1px 2px rgba(14, 26, 43, 0.06), 0 8px 24px rgba(14, 26, 43, 0.05);
+
+  --font-sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, sans-serif;
+  --font-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif);
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  margin: 0;
+}
+
+a {
+  color: var(--navy-600);
+  text-underline-offset: 2px;
+}
+
+/* Visible focus is an accessibility requirement, not a preference. */
+:focus-visible {
+  outline: 2px solid var(--gold-600);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- primitives ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 11px 20px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-primary {
+  background: var(--navy-800);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: var(--navy-900);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--navy-700);
+  border-color: var(--rule);
+}
+.btn-secondary:hover {
+  border-color: var(--navy-400);
+}
+
+/**
+ * Disabled controls must say why. A greyed-out button with no
+ * explanation is indistinguishable from a broken one, and the brief is
+ * explicit that nothing decorative ships.
+ */
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  background: var(--surface-sunk);
+  color: var(--ink-mute);
+  border-color: var(--rule);
+  cursor: not-allowed;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-600);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.notice {
+  border-left: 3px solid var(--gold-600);
+  background: var(--surface);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 16px 20px;
+  box-shadow: var(--shadow-sm);
+}
