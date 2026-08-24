@@ -91,10 +91,33 @@ async function provisionWorkspace(clerkOrgId: string, clerkUserId: string) {
   return created.id;
 }
 
+/**
+ * Finds an organization the user belongs to, even when the session token
+ * has not caught up.
+ *
+ * `auth().orgId` reports the *active* organization on the session. Right
+ * after `<CreateOrganization>` succeeds, the token can still be the old
+ * one, so orgId comes back empty — and the page would show the "name your
+ * workspace" form again to someone who just named their workspace, while
+ * their Clerk organization sat there unprovisioned. Asking Clerk's backend
+ * directly is authoritative and does not depend on token timing.
+ */
+async function findOrganizationForUser(clerkUserId: string): Promise<string | null> {
+  const client = await clerkClient();
+  const { data } = await client.users.getOrganizationMembershipList({
+    userId: clerkUserId,
+    limit: 10,
+  });
+  return data.length > 0 ? data[0].organization.id : null;
+}
+
 export default async function OnboardingPage() {
-  const { userId: clerkUserId, orgId: clerkOrgId } = await auth();
+  const { userId: clerkUserId, orgId: activeOrgId } = await auth();
 
   if (!clerkUserId) redirect("/sign-in");
+
+  // Prefer the active organization; fall back to any membership.
+  const clerkOrgId = activeOrgId ?? (await findOrganizationForUser(clerkUserId));
 
   if (clerkOrgId) {
     await provisionWorkspace(clerkOrgId, clerkUserId);
