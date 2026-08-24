@@ -125,29 +125,28 @@ export default async function OnboardingPage() {
   }
 
   return (
-    <div style={{ maxWidth: 640, margin: "0 auto", padding: "56px 24px 96px" }}>
-      <p className="eyebrow" style={{ marginBottom: 12 }}>
-        Step one
-      </p>
-      <h1 style={{ fontSize: 32, fontWeight: 600, marginBottom: 12 }}>
-        Name your workspace
-      </h1>
-      <p
-        style={{
-          color: "var(--ink-soft)",
-          fontFamily: "var(--font-serif)",
-          fontSize: 18,
-          marginBottom: 28,
-          maxWidth: "52ch",
-        }}
-      >
-        This is your brokerage. Your clients, deals, documents and lender
-        relationships live inside it, and nothing in it is visible to any other
-        workspace.
-      </p>
+    <div style={{ background: "var(--ground)", minHeight: "calc(100vh - 68px)" }}>
+      <div className="shell-narrow" style={{ padding: "64px 24px 96px" }}>
+        <p className="eyebrow eyebrow-ink" style={{ marginBottom: 14 }}>
+          Step one of one
+        </p>
+        <h1 className="h2" style={{ marginBottom: 14 }}>
+          Name your workspace
+        </h1>
+        <p className="lede" style={{ marginBottom: 32 }}>
+          This is your brokerage. Your clients, deals, documents and lender
+          relationships live inside it, and nothing in it is visible to any
+          other workspace on the platform.
+        </p>
 
-      <div style={{ display: "grid", placeItems: "start" }}>
-        <CreateOrganization afterCreateOrganizationUrl="/onboarding" />
+        <div style={{ display: "grid", placeItems: "start" }}>
+          <CreateOrganization afterCreateOrganizationUrl="/onboarding" />
+        </div>
+
+        <p className="tiny muted" style={{ marginTop: 26, maxWidth: "56ch" }}>
+          Most brokerages use their company name. You can change it later, and
+          you can invite the rest of your team once the workspace exists.
+        </p>
       </div>
     </div>
   );
